@@ -1,0 +1,9 @@
+[submodule "portal-commons"]
+	path = portal-commons
+	url = https://github.com/rudysev/portal-commons.git
+[submodule "portal-wake"]
+	path = portal-wake
+	url = https://github.com/rudysev/portal-wake.git
+[submodule "portal-assistant"]
+	path = portal-assistant
+	url = https://github.com/rudysev/portal-assistant.git

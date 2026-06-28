@@ -1,0 +1,12 @@
+# Local agent/editor state — not part of the workspace
+.claude/
+.cursorrules
+.DS_Store
+
+# Optional, independently-versioned apps (e.g. portal-kasa has its own repo). These plug into the
+# assistant at runtime but aren't part of the workspace checkout — host them here, untracked.
+/standalone/
+
+# Android platform-tools (adb) the combined one-click installer auto-downloads next to itself.
+provisioning/platform-tools/
+provisioning/platform-tools.zip
