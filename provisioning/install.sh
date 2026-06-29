@@ -76,7 +76,10 @@ bootstrap_from_github() {
 ensure_submodules() {
   # Test for presence with -f, not -x: the children are invoked via `bash "$f"` (which ignores the
   # exec bit), so a checkout that lost +x (FAT/exFAT, a tarball, core.fileMode=false) still runs fine.
-  if [ -f "$ASSISTANT_DIR/install.sh" ] && [ -f "$WAKE_DIR/install.sh" ]; then return; fi
+  # Reuse present scripts only in a git checkout (git owns their freshness, and we must not overwrite a
+  # tracked submodule tree). A plain ZIP re-run falls through and re-fetches below, so a fix on main
+  # reaches a kept-folder re-run instead of being shadowed by the first run's stale copy.
+  if [ -f "$ASSISTANT_DIR/install.sh" ] && [ -f "$WAKE_DIR/install.sh" ] && git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then return; fi
   if git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     # A git checkout: the apps are submodules — pull them. Do NOT fall back to the network bootstrap
     # here: that would write unpinned main-branch content into the tracked submodule trees and dirty

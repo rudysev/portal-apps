@@ -82,7 +82,10 @@ function Bootstrap-FromGitHub {
 }
 
 function Ensure-Submodules {
-  if ((Test-Path $AssistantPs1) -and (Test-Path $WakePs1)) { return }
+  # Reuse present scripts only in a git checkout (git owns their freshness, and we must not overwrite a
+  # tracked submodule tree). A plain ZIP re-run falls through and re-fetches below, so a fix on main
+  # reaches a kept-folder re-run instead of being shadowed by the first run's stale copy.
+  if ((Test-Path $AssistantPs1) -and (Test-Path $WakePs1) -and (Test-Path (Join-Path $Root ".git"))) { return }
   if (Test-Path (Join-Path $Root ".git")) {
     # A git checkout: the apps are submodules — pull them. Do NOT fall back to the network bootstrap
     # here: that would write unpinned main-branch content into the tracked submodule trees.
