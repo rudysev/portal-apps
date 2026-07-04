@@ -193,7 +193,11 @@ do_install() {
     bash "$WAKE_DIR/install.sh" || die "portal-wake install failed."
   fi
 
-  printf "\n%s✓ Done. Say \"hey jarvis\" near the Portal.%s\n" "$G$B" "$N"
+  if [ "${sdk:-0}" -ge 29 ]; then
+    printf "\n%s✓ Done. Open Jarvis and say \"hey jarvis\" while it's on screen.%s\n" "$G$B" "$N"
+  else
+    printf "\n%s✓ Done. Say \"hey jarvis\" near the Portal.%s\n" "$G$B" "$N"
+  fi
   printf "%sTo remove them: re-run with --uninstall (or double-click Uninstall-PortalApps).%s\n" "$D" "$N"
 }
 

@@ -220,7 +220,7 @@ if (-not ((& $adb shell pm path $assistPkg) -match "package:")) { Die "Jarvis di
 # - and holding the mic there would starve Jarvis's in-app "hey jarvis" detector. Install it only on gen1
 # (Android 9); on gen2 Jarvis handles wake in-app. Detection failure falls through to installing it
 # (conservative: preserves gen1 behavior, and portal-wake self-guards inert on A10 anyway).
-$sdk = 0; [int]::TryParse((("$(& $adb shell getprop ro.build.version.sdk)").Trim() -replace '\D',''), [ref]$sdk) | Out-Null
+$sdk = 0; [int]::TryParse((("$(& $adb shell getprop ro.build.version.sdk 2>$null)").Trim() -replace '\D',''), [ref]$sdk) | Out-Null
 if ($sdk -ge 29) {
   Write-Host ""
   Step "Skipping the wake listener (portal-wake)"
@@ -234,5 +234,9 @@ if ($sdk -ge 29) {
   if (-not ((& $adb shell pm path $wakePkg) -match "package:")) { Die "portal-wake didn't install (package $wakePkg not found on the device)." }
 }
 
-Write-Host "`n[ok] Done. Say 'hey jarvis' near the Portal." -ForegroundColor Green
+if ($sdk -ge 29) {
+  Write-Host "`n[ok] Done. Open Jarvis and say 'hey jarvis' while it's on screen." -ForegroundColor Green
+} else {
+  Write-Host "`n[ok] Done. Say 'hey jarvis' near the Portal." -ForegroundColor Green
+}
 Write-Host "To remove them: re-run with -Uninstall (or double-click Uninstall-PortalApps)." -ForegroundColor DarkGray
