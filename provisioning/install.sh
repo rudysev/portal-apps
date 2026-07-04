@@ -176,12 +176,24 @@ do_install() {
   printf "\n"
   bash "$ASSISTANT_DIR/install.sh" || die "Jarvis install failed."
 
-  printf "\n"
-  step "Installing the wake listener (portal-wake)"
-  printf "\n"
-  bash "$WAKE_DIR/install.sh" || die "portal-wake install failed."
+  # portal-wake adds nothing on gen2 (Android 10+): the OS silences its background mic, so it can't detect
+  # — and holding the mic there would starve Jarvis's in-app "hey jarvis" detector. So install it only on
+  # gen1 (Android 9); on gen2 Jarvis handles wake in-app while on screen. Detection failure falls through to
+  # installing it (conservative: preserves gen1 behavior, and portal-wake self-guards inert on A10 anyway).
+  local sdk; sdk="$(a shell getprop ro.build.version.sdk 2>/dev/null | tr -dc '0-9')"
+  if [ "${sdk:-0}" -ge 29 ]; then
+    printf "\n"
+    step "Skipping the wake listener (portal-wake)"
+    ok "This Portal (Android 10+, gen2): Jarvis detects \"hey jarvis\" in-app while on screen — portal-wake isn't needed here."
+    printf "  %sIf portal-wake is already installed, remove it with: adb uninstall com.portal.wake%s\n" "$D" "$N"
+  else
+    printf "\n"
+    step "Installing the wake listener (portal-wake)"
+    printf "\n"
+    bash "$WAKE_DIR/install.sh" || die "portal-wake install failed."
+  fi
 
-  printf "\n%s✓ Done. Both apps are installed — say \"hey jarvis\" near the Portal.%s\n" "$G$B" "$N"
+  printf "\n%s✓ Done. Say \"hey jarvis\" near the Portal.%s\n" "$G$B" "$N"
   printf "%sTo remove them: re-run with --uninstall (or double-click Uninstall-PortalApps).%s\n" "$D" "$N"
 }
 

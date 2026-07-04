@@ -216,11 +216,23 @@ Step "Installing Jarvis (portal-assistant)`n"
 if ($LASTEXITCODE -ne 0) { Die "Jarvis install failed." }
 if (-not ((& $adb shell pm path $assistPkg) -match "package:")) { Die "Jarvis didn't install (package $assistPkg not found on the device)." }
 
-Write-Host ""
-Step "Installing the wake listener (portal-wake)`n"
-& powershell -NoProfile -ExecutionPolicy Bypass -File $WakePs1
-if ($LASTEXITCODE -ne 0) { Die "portal-wake install failed." }
-if (-not ((& $adb shell pm path $wakePkg) -match "package:")) { Die "portal-wake didn't install (package $wakePkg not found on the device)." }
+# portal-wake adds nothing on gen2 (Android 10+): the OS silences its background mic, so it can't detect
+# - and holding the mic there would starve Jarvis's in-app "hey jarvis" detector. Install it only on gen1
+# (Android 9); on gen2 Jarvis handles wake in-app. Detection failure falls through to installing it
+# (conservative: preserves gen1 behavior, and portal-wake self-guards inert on A10 anyway).
+$sdk = 0; [int]::TryParse((("$(& $adb shell getprop ro.build.version.sdk)").Trim() -replace '\D',''), [ref]$sdk) | Out-Null
+if ($sdk -ge 29) {
+  Write-Host ""
+  Step "Skipping the wake listener (portal-wake)"
+  Ok "This Portal (Android 10+, gen2): Jarvis detects 'hey jarvis' in-app while on screen - portal-wake isn't needed here."
+  Write-Host "  If portal-wake is already installed, remove it with: adb uninstall com.portal.wake" -ForegroundColor DarkGray
+} else {
+  Write-Host ""
+  Step "Installing the wake listener (portal-wake)`n"
+  & powershell -NoProfile -ExecutionPolicy Bypass -File $WakePs1
+  if ($LASTEXITCODE -ne 0) { Die "portal-wake install failed." }
+  if (-not ((& $adb shell pm path $wakePkg) -match "package:")) { Die "portal-wake didn't install (package $wakePkg not found on the device)." }
+}
 
-Write-Host "`n[ok] Done. Both apps are installed - say 'hey jarvis' near the Portal." -ForegroundColor Green
+Write-Host "`n[ok] Done. Say 'hey jarvis' near the Portal." -ForegroundColor Green
 Write-Host "To remove them: re-run with -Uninstall (or double-click Uninstall-PortalApps)." -ForegroundColor DarkGray
