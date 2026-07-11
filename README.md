@@ -4,8 +4,8 @@ The workspace for the Portal voice stack. It pins three repos as git submodules:
 
 - **[`portal-assistant`](https://github.com/rudysev/portal-assistant/tree/main)** — **Jarvis**, the
   conversational voice assistant (`com.portal.assistant`). Its voice backend is swappable: **Gemini Live**
-  (cloud, default) or a **local server** on your LAN ([`host-assistant`](https://github.com/rudysev/host-assistant)
-  — Pipecat + Ollama) for a fully private, on-network setup where no audio leaves your network.
+  (cloud, default) or a **local server** on your LAN for a fully private, on-network setup where no audio
+  leaves your network.
 - **[`portal-wake`](https://github.com/rudysev/portal-wake)** — the always-on **"hey jarvis"**
   wake-word listener that triggers Jarvis (`com.portal.wake`).
 - **[`portal-commons`](portal-commons/)** — shared Kotlin/JVM library used by both apps.
