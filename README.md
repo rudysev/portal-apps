@@ -3,7 +3,9 @@
 The workspace for the Portal voice stack. It pins three repos as git submodules:
 
 - **[`portal-assistant`](https://github.com/rudysev/portal-assistant/tree/main)** — **Jarvis**, the
-  conversational voice assistant (`com.portal.assistant`).
+  conversational voice assistant (`com.portal.assistant`). Its voice backend is swappable: **Gemini Live**
+  (cloud, default) or a **local server** on your LAN ([`host-assistant`](https://github.com/rudysev/host-assistant)
+  — Pipecat + Ollama) for a fully private, on-network setup where no audio leaves your network.
 - **[`portal-wake`](https://github.com/rudysev/portal-wake)** — the always-on **"hey jarvis"**
   wake-word listener that triggers Jarvis (`com.portal.wake`).
 - **[`portal-commons`](portal-commons/)** — shared Kotlin/JVM library used by both apps.
@@ -46,6 +48,7 @@ These are independent community projects — **not affiliated with, endorsed by,
 Google**. "Meta Portal" and "Portal" are trademarks of Meta Platforms, Inc., and "Gemini" is a
 trademark of Google LLC, used here only to identify compatible hardware and the AI service Jarvis talks
 to. These are sideloaded apps for discontinued devices and are **use-at-your-own-risk** (may void
-warranty; no guarantees). Jarvis is **not** on-device only: to answer you it streams your microphone
-audio to **Google's Gemini Live API** under **your own** API key, subject to Google's terms and privacy
-policy. See each app's `DISCLAIMER.md` for the full text and privacy notes.
+warranty; no guarantees). With its default **Gemini** backend, Jarvis is **not** on-device only: to answer
+you it streams your microphone audio to **Google's Gemini Live API** under **your own** API key, subject to
+Google's terms and privacy policy. Point it at a **local server** on your LAN instead and the audio stays on
+your own network — no cloud, full privacy. See each app's `DISCLAIMER.md` for the full text and privacy notes.
