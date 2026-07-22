@@ -1,9 +1,12 @@
 [submodule "portal-commons"]
 	path = portal-commons
 	url = https://github.com/rudysev/portal-commons.git
+	branch = main
 [submodule "portal-wake"]
 	path = portal-wake
 	url = https://github.com/rudysev/portal-wake.git
+	branch = main
 [submodule "portal-assistant"]
 	path = portal-assistant
 	url = https://github.com/rudysev/portal-assistant.git
+	branch = main
