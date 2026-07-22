@@ -219,9 +219,14 @@ do_uninstall() {
   # (a disable-user package can be hidden from the default `pm list packages` on some Android builds).
   if a shell pm list packages -d com.millennium 2>/dev/null | tr -d '\r' | grep -q "package:com.millennium"; then
     step "Re-enabling Meta's \"Hey Alexa\" detector"
-    a shell pm enable com.millennium >/dev/null 2>&1 && ok "Re-enabled com.millennium" || warn "Couldn't re-enable com.millennium — re-enable it from the Portal's app settings."
+    if a shell pm enable com.millennium >/dev/null 2>&1; then
+      ok "Re-enabled com.millennium"
+      printf "%s  Meta's \"Hey Alexa\" restored to its original state.%s\n" "$D" "$N"
+    else
+      warn "Couldn't re-enable com.millennium — re-enable it from the Portal's app settings."
+    fi
   fi
-  printf "\n%s✓ Done. Both apps removed; Meta's \"Hey Alexa\" restored to its original state.%s\n" "$G$B" "$N"
+  printf "\n%s✓ Done. Both apps removed.%s\n" "$G$B" "$N"
 }
 
 do_status() {
