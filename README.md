@@ -37,11 +37,14 @@ Developers can instead `git clone --recursive https://github.com/rudysev/portal-
 
 ```bash
 git submodule update --init --recursive
-git submodule foreach 'git config core.hooksPath .githooks'   # enable each repo's git hooks
+git config core.hooksPath .githooks && git submodule foreach 'git config core.hooksPath .githooks'   # enable every repo's git hooks
 ```
 
-Verify a change with `./gradlew check` inside the submodule. The hooks need the ktlint CLI
-(`brew install ktlint`): `pre-commit` lints the staged Kotlin files and `pre-push` runs `./gradlew check`.
+Verify a change with `./gradlew check` inside the submodule. The hooks need the ktlint and shellcheck CLIs
+(`brew install ktlint shellcheck`): in each submodule `pre-commit` lints the staged Kotlin files and shell scripts
+and `pre-push` runs `./gradlew check`. Here in portal-apps, `pre-commit` runs shellcheck on the staged scripts
+(the `provisioning/` installer). Each repo's CI runs shellcheck on all its scripts
+(`.github/workflows/shellcheck.yml` here); all four repos carry an identical `.shellcheckrc`.
 
 Each submodule builds independently (see its own `CLAUDE.md` / `README.md`); `portal-commons` is wired
 into the two apps via a Gradle composite build from the sibling checkout.
