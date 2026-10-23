@@ -10,3 +10,6 @@
 # Android platform-tools (adb) the combined one-click installer auto-downloads next to itself.
 provisioning/platform-tools/
 provisioning/platform-tools.zip
+
+# Local issue tracker (specs + tickets) — kept on this machine only.
+.scratch/
