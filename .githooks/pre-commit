@@ -1,7 +1,7 @@
 #!/bin/sh
 # pre-commit: shellcheck on the staged shell scripts (the end-user installer in provisioning/ and this hook).
 # Rejects the commit on findings; never auto-fixes. Enable with `git config core.hooksPath .githooks`.
-# Skip deliberately with `git commit --no-verify`. The submodules have their own hooks (ktlint + shellcheck).
+# Skip deliberately with `git commit --no-verify`. The submodules have their own hooks (ktlint, detekt, shellcheck).
 set -eu
 
 cd "$(git rev-parse --show-toplevel)"
@@ -18,6 +18,28 @@ quoted() {
   tr '\0' '\n' | while IFS= read -r f; do printf " '%s'" "$f"; done
 }
 
+# Lint what is about to be committed, not the working tree: a partially staged file (`git add -p`) is checked as
+# staged. The index is exported to a scratch tree at the same repo-relative paths: the staged scripts, .shellcheckrc
+# and every tracked shell script and *.env, so sourced files resolve. shellcheck runs from inside it.
+tmp=${TMPDIR:-/tmp}
+STAGE=$(mktemp -d "${tmp%/}/pre-commit.XXXXXX")
+trap 'rm -rf "$STAGE" "$STAGE.out"' EXIT
+# The physical path, so the prefix stripped from tool output matches however a tool resolves it.
+STAGE=$(cd "$STAGE" && pwd -P)
+{
+  staged_shell
+  git ls-files -z -- '.shellcheckrc' '*/.shellcheckrc' '*.sh' '*.command' '*.env' '.githooks/*'
+} | git checkout-index -f -z --stdin --prefix="$STAGE/"
+
+# Runs a tool inside the scratch tree, printing its output with the scratch prefix stripped so paths read as
+# repo-relative. Returns the tool's exit status.
+in_stage() {
+  rc=0
+  (cd "$STAGE" && "$@") >"$STAGE.out" 2>&1 || rc=$?
+  sed "s|$STAGE/||g" "$STAGE.out"
+  return "$rc"
+}
+
 lint_shell() {
   [ -n "$(staged_shell | tr -d '\0')" ] || return 0
 
@@ -27,10 +49,10 @@ lint_shell() {
   fi
 
   # Settings (follow sourced files, resolved from each script's directory) come from .shellcheckrc.
-  if ! staged_shell | xargs -0 shellcheck; then
+  if ! staged_shell | in_stage xargs -0 shellcheck; then
     echo >&2
-    echo "pre-commit: shellcheck found problems (commit rejected). Fix them by hand (each finding links its wiki" >&2
-    echo "page), re-stage the files and commit again. Re-check with:" >&2
+    echo "pre-commit: shellcheck found problems in the staged files (commit rejected). Fix them by hand (each finding" >&2
+    echo "links its wiki page), re-stage the files and commit again. Re-check with:" >&2
     printf '  shellcheck%s\n' "$(staged_shell | quoted)" >&2
     return 1
   fi
