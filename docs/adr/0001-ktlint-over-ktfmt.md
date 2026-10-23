@@ -23,3 +23,12 @@ the pre-commit hook's CLI), with the existing `.editorconfig` as its only config
 - Some formatting nondeterminism is accepted, which ktfmt would have removed.
 - Switching to ktfmt later means a full reformat of every file in all three repos, plus giving up the 4-space style
   (ktfmt's default is 2 spaces). That cost is why this is recorded.
+
+## Amendment (2026-10-23): 120-column lines
+
+The user decided to drop `max_line_length = off` for a **120-column** limit in every repo's `.editorconfig`, the
+same limit as detekt's default `MaxLineLength`, so ktlint and detekt agree without a detekt override. The decision
+and the rest of the consequences above still hold, except "No mass reformat": bringing the code under 120 columns
+was a reformat, done in one isolated `style: limit Kotlin lines to 120 characters` commit per repo (portal-commons
+`e89714e`, portal-wake `735e717`, portal-assistant `167df3a`) so it stays separable from behaviour changes in
+`git blame` and review.
