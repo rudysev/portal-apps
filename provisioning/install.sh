@@ -66,9 +66,11 @@ bootstrap_from_github() {
      fetch_verify "$w/install.sh" "$tmp/w_install.sh" "resolve_adb"  &&
      fetch_verify "$w/config.env" "$tmp/w_config.env" "RELEASE_REPO" &&
      mkdir -p "$ASSISTANT_DIR" "$WAKE_DIR"; then
-    mv "$tmp/a_install.sh" "$ASSISTANT_DIR/install.sh" && mv "$tmp/a_config.env" "$ASSISTANT_DIR/config.env" &&
-    mv "$tmp/a_keyprov.sh" "$ASSISTANT_DIR/keyprov.sh" && mv "$tmp/w_install.sh" "$WAKE_DIR/install.sh" &&
-    mv "$tmp/w_config.env" "$WAKE_DIR/config.env" || { rm -rf "$tmp"; return 1; }
+    if ! { mv "$tmp/a_install.sh" "$ASSISTANT_DIR/install.sh" && mv "$tmp/a_config.env" "$ASSISTANT_DIR/config.env" &&
+      mv "$tmp/a_keyprov.sh" "$ASSISTANT_DIR/keyprov.sh" && mv "$tmp/w_install.sh" "$WAKE_DIR/install.sh" &&
+      mv "$tmp/w_config.env" "$WAKE_DIR/config.env"; }; then
+      rm -rf "$tmp"; return 1
+    fi
     rm -rf "$tmp"; ok "App installers downloaded"; return 0
   fi
   rm -rf "$tmp"; return 1
@@ -213,7 +215,7 @@ do_uninstall() {
   for pkg in com.portal.assistant com.portal.wake; do
     step "Removing $pkg"
     a shell am force-stop "$pkg" >/dev/null 2>&1
-    a uninstall "$pkg" >/dev/null 2>&1 && ok "Uninstalled $pkg" || warn "$pkg was not installed."
+    if a uninstall "$pkg" >/dev/null 2>&1; then ok "Uninstalled $pkg"; else warn "$pkg was not installed."; fi
   done
   # Re-enable Meta's "Hey Alexa" detector if portal-wake disabled it. Detect the disabled state with -d
   # (a disable-user package can be hidden from the default `pm list packages` on some Android builds).
