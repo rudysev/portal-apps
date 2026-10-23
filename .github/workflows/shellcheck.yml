@@ -1,0 +1,19 @@
+name: shellcheck
+
+# The superproject has no Gradle build: its only code is the end-user installer in provisioning/ (plus the
+# git hook). The submodules run their own CI.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Lints every shell script (*.sh, *.command, .githooks/*) with the runner's preinstalled shellcheck and the
+  # repo's .shellcheckrc, the same check .githooks/pre-commit runs on staged files. Submodules aren't checked
+  # out: each one lints its own scripts.
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: shellcheck --version
+      - run: git ls-files -z '*.sh' '*.command' '.githooks/*' | xargs -0 --no-run-if-empty shellcheck

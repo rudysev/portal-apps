@@ -1,0 +1,39 @@
+#!/bin/sh
+# pre-commit: shellcheck on the staged shell scripts (the end-user installer in provisioning/ and this hook).
+# Rejects the commit on findings; never auto-fixes. Enable with `git config core.hooksPath .githooks`.
+# Skip deliberately with `git commit --no-verify`. The submodules have their own hooks (ktlint + shellcheck).
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Staged (added/copied/modified/renamed) files matching the given pathspecs, NUL-delimited so odd names survive.
+staged() {
+  git diff --cached --name-only --diff-filter=ACMR -z -- "$@"
+}
+# Shell scripts: *.sh, the macOS double-click *.command launchers and these hooks.
+staged_shell() { staged '*.sh' '*.command' '.githooks/*'; }
+
+# Turns a NUL-delimited file list on stdin into " 'a' 'b'" for a copy-pasteable command line.
+quoted() {
+  tr '\0' '\n' | while IFS= read -r f; do printf " '%s'" "$f"; done
+}
+
+lint_shell() {
+  [ -n "$(staged_shell | tr -d '\0')" ] || return 0
+
+  if ! command -v shellcheck >/dev/null 2>&1; then
+    echo "pre-commit: shellcheck not found. Install it with: brew install shellcheck" >&2
+    return 1
+  fi
+
+  # Settings (follow sourced files, resolved from each script's directory) come from .shellcheckrc.
+  if ! staged_shell | xargs -0 shellcheck; then
+    echo >&2
+    echo "pre-commit: shellcheck found problems (commit rejected). Fix them by hand (each finding links its wiki" >&2
+    echo "page), re-stage the files and commit again. Re-check with:" >&2
+    printf '  shellcheck%s\n' "$(staged_shell | quoted)" >&2
+    return 1
+  fi
+}
+
+lint_shell

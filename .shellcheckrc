@@ -1,0 +1,5 @@
+# shellcheck settings, identical in portal-apps and each submodule. Used by .githooks/pre-commit and CI.
+# Follow `.`/`source` into other files so a variable set here and read there isn't reported as unused,
+# and resolve those paths (and `# shellcheck source=` directives) relative to the script's own directory.
+external-sources=true
+source-path=SCRIPTDIR
