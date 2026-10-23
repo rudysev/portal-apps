@@ -41,7 +41,10 @@ git config core.hooksPath .githooks && git submodule foreach 'git config core.ho
 ```
 
 Verify a change with `./gradlew check` inside the submodule. The hooks need the ktlint and shellcheck CLIs
-(`brew install ktlint shellcheck`): in each submodule `pre-commit` lints the staged Kotlin files and shell scripts
+(`brew install ktlint shellcheck`) and detekt 2.0.0-alpha.6's `detekt-cli` (unzip
+[the release zip](https://github.com/detekt/detekt/releases/download/v2.0.0-alpha.6/detekt-cli-2.0.0-alpha.6.zip)
+and put its `bin/` on your `PATH`; Homebrew only has detekt 1.x): in each
+submodule `pre-commit` lints the staged Kotlin files (ktlint, detekt) and shell scripts
 and `pre-push` runs `./gradlew check`. Here in portal-apps, `pre-commit` runs shellcheck on the staged scripts
 (the `provisioning/` installer). Each repo's CI runs shellcheck on all its scripts
 (`.github/workflows/shellcheck.yml` here); all four repos carry an identical `.shellcheckrc`.
