@@ -17,7 +17,7 @@
 set -u
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SELF="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"   # absolute path to this script — survives the cd below (for --help)
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR" || exit 1
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"   # the portal-apps superproject root
 
 ASSISTANT_DIR="$ROOT/portal-assistant/provisioning"
