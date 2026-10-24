@@ -1,6 +1,7 @@
 # 0002: A silent wake stream is a capture loss with its own cause, and it ends capture
 
-**Status:** accepted (2026-10-23); amended 2026-10-24: a loss is counted per **capture request**, not per `start()`
+**Status:** accepted (2026-10-23); amended 2026-10-24: a loss is counted per **capture request**, not per `start()`;
+amended 2026-10-24: an opt-in **rebuild on silence** for the assistant's conversation capture
 
 ## Context
 
@@ -34,3 +35,16 @@ leaving the engine idle. Detection is opt-in for each `PcmCaptureSession`, and o
 - The rule relies on real mics never producing exact zeros for the whole window. A probe on Portal+ gen1 confirmed it:
   the longest exact-zero run in ~75 min of room audio was 2,187 samples, against the 32,000 needed. A denied app-op
   gave exact zeros. The privacy mic-mute gives |sample| ≤ 3, never zero, so it is not reported as silenced.
+
+## Amendment: rebuild on silence (2026-10-24)
+
+On Portal+ gen1, pressing Home mid-conversation left the orange bar up but Jarvis deaf: about 0.7 s after the app
+leaves the foreground, the platform's `AudioPolicyService` (`ProcessPolicy: onUidForeground() silencing for <uid>`)
+silences the input it already has open, even though it is held by a microphone foreground service. Unlike a denied
+app-op, a **reopened** input is live again, and so is a capture opened while the app is already in the background.
+
+So `PcmCaptureSession` gains an opt-in `rebuildOnSilence`: a full silence window first rebuilds the device, once per
+silence (any non-zero sample allows another rebuild), and only a window that follows the rebuild with no sample heard
+ends capture as *silenced*. The wake engine leaves it off, so this ADR's rule for wake stands. The assistant opts in
+with a 500 ms window, short enough to keep the user's first words after Home and still well above the longest
+natural zero run (2,187 samples ≈ 137 ms).
