@@ -1,6 +1,6 @@
 # 0002: A silent wake stream is a capture loss with its own cause, and it ends capture
 
-**Status:** accepted (2026-10-23)
+**Status:** accepted (2026-10-23); amended 2026-10-24: a loss is counted per **capture request**, not per `start()`
 
 ## Context
 
@@ -12,8 +12,8 @@ capture loss meant "capture is not running" and had two causes: *not granted* an
 
 A wake capture stream that delivers only exact-zero samples for one continuous window (equal to
 `DEFAULT_IDLE_REBUILD_MS`) is a **capture loss** with a third cause, **silenced**. The session ends capture, with no
-rebuild first, and reports it like any other loss: at most once per `start()`, leaving the engine idle. Detection is
-opt-in for each `PcmCaptureSession`, and only `WakeMicEngine` turns it on.
+rebuild first, and reports it like any other loss: at most once per **capture request**, ending the request and
+leaving the engine idle. Detection is opt-in for each `PcmCaptureSession`, and only `WakeMicEngine` turns it on.
 
 ## Considered options
 
