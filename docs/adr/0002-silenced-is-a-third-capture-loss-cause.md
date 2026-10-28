@@ -1,7 +1,8 @@
 # 0002: A silent wake stream is a capture loss with its own cause, and it ends capture
 
 **Status:** accepted (2026-10-23); amended 2026-10-24: a loss is counted per **capture request**, not per `start()`;
-amended 2026-10-24: an opt-in **rebuild on silence** for the assistant's conversation capture
+amended 2026-10-24: an opt-in **rebuild on silence** for the assistant's conversation capture; amended 2026-10-27:
+the capture policies' **names**, now one `CapturePolicy`
 
 ## Context
 
@@ -48,3 +49,13 @@ silence (any non-zero sample allows another rebuild), and only a window that fol
 ends capture as *silenced*. The wake engine leaves it off, so this ADR's rule for wake stands. The assistant opts in
 with a 500 ms window, short enough to keep the user's first words after Home and still well above the longest
 natural zero run (2,187 samples ≈ 137 ms).
+
+## Amendment: names (2026-10-27)
+
+The capture policies are now one `CapturePolicy` value per consumer, so the names above have moved. Nothing else
+changes.
+
+- The silence opt-in is `CapturePolicy.silence`, a `CapturePolicy.Silence(windowMs, rebuildFirst)`.
+- Rebuild on silence is `Silence.rebuildFirst`; it can only be set together with a window.
+- The wake window is `WakeMicEngine.SILENCE_WINDOW_MS` (still equal to the idle rebuild window,
+  `CapturePolicy.DEFAULT_IDLE_REBUILD_MS`), and portal-wake's retry streak reads it.
