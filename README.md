@@ -52,6 +52,11 @@ and `pre-push` runs `./gradlew check`. Here in portal-apps, `pre-commit` runs sh
 Each submodule builds independently (see its own `CLAUDE.md` / `README.md`); `portal-commons` is wired
 into the two apps via a Gradle composite build from the sibling checkout.
 
+`prototypes/` holds standalone test apps that are not part of the install. They build on their own and nothing
+depends on them. [`prototypes/jarvis-cascade`](prototypes/jarvis-cascade/README.md) runs the two-check "Hey Jarvis"
+chain (openWakeWord, then sherpa-onnx) on a Portal and logs every candidate for on-device false-accept and
+false-reject counts.
+
 ## Disclaimer
 
 These are independent community projects — **not affiliated with, endorsed by, or sponsored by Meta or

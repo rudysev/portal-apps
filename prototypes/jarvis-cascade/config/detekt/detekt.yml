@@ -1,0 +1,38 @@
+# detekt config, identical in portal-commons, portal-wake and portal-assistant: change all three together.
+# Layered on detekt's default config (`buildUponDefaultConfig = true` in each build), so only deviations are listed.
+# No baseline: suppress inline only (`@Suppress("RuleId")`), each with a reason comment.
+
+config:
+  # Any finding fails the build, whatever the rule's severity.
+  warningsAsErrors: true
+
+coroutines:
+  # Opt-ins: coroutine misuse that compiles fine and fails at runtime. InjectDispatcher and SleepInsteadOfDelay are
+  # already on by default and are listed so the intent survives a default-config change.
+  GlobalCoroutineUsage:
+    active: true
+  InjectDispatcher:
+    active: true
+  SleepInsteadOfDelay:
+    active: true
+  SuspendFunSwallowedCancellation:
+    active: true
+
+naming:
+  # @Composable functions are PascalCase by convention, as in .editorconfig's
+  # ktlint_function_naming_ignore_when_annotated_with (portal-assistant).
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+style:
+  # TODO tracking: work lives in the .scratch issue tracker, not in code comments, so any marker fails the build.
+  # The values are regexes; \b also catches the bare forms (`TODO fix`, `TODO(name)`) the default `TODO:` misses.
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'Track the work as an issue instead of a TODO comment.'
+        value: '\bTODO\b'
+      - reason: 'Track the work as an issue instead of a FIXME comment.'
+        value: '\bFIXME\b'
+      - reason: 'Fix it before committing (STOPSHIP).'
+        value: '\bSTOPSHIP\b'

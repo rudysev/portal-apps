@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jarvis Cascade Test</string>
+    <string name="channel_name">Cascade listening</string>
+    <string name="notification_title">Listening for \"Hey Jarvis\" (test)</string>
+
+    <string name="start">Start listening</string>
+    <string name="stop">Stop</string>
+    <string name="status_listening">Listening on %1$s</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="audio_source">Audio source</string>
+    <string name="stage1_threshold">Stage 1 threshold (openWakeWord)</string>
+    <string name="stage2_threshold">Stage 2 threshold (sherpa-onnx)</string>
+    <string name="stage2_boost">Stage 2 boost</string>
+    <string name="apply">Apply</string>
+    <string name="save_audio">Save each candidate\'s 2 s of audio (WAV, on this device only)</string>
+    <string name="mark_missed">I said it, nothing triggered</string>
+    <string name="mark_false_trigger">Last trigger was false</string>
+    <string name="marked">Marked: %1$s</string>
+    <string name="invalid_settings">Thresholds must be between 0 and 1, and the boost above 0</string>
+    <string name="mic_denied">Microphone permission denied</string>
+    <string name="log_path">Log: %1$s</string>
+    <string name="foreground_only">Android 10: the Portal only lets this app hear while it is on screen. Keep it in front.</string>
+</resources>

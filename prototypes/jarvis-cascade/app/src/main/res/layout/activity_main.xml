@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Controls -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/foreground_only"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/foreground_only"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/source"
+                android:text="@string/audio_source" />
+
+            <Spinner
+                android:id="@+id/source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/stage1_threshold"
+                android:text="@string/stage1_threshold" />
+
+            <EditText
+                android:id="@+id/stage1_threshold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/stage2_threshold"
+                android:text="@string/stage2_threshold" />
+
+            <EditText
+                android:id="@+id/stage2_threshold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/stage2_boost"
+                android:text="@string/stage2_boost" />
+
+            <EditText
+                android:id="@+id/stage2_boost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:inputType="numberDecimal" />
+
+            <Button
+                android:id="@+id/apply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/apply" />
+
+            <CheckBox
+                android:id="@+id/save_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save_audio" />
+
+            <Button
+                android:id="@+id/mark_missed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mark_missed" />
+
+            <Button
+                android:id="@+id/mark_false_trigger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mark_false_trigger" />
+
+            <TextView
+                android:id="@+id/log_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Newest log lines first -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_weight="2">
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textIsSelectable="true" />
+    </ScrollView>
+</LinearLayout>

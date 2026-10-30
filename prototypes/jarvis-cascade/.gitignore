@@ -1,0 +1,17 @@
+*.iml
+.gradle
+.kotlin
+.idea/
+local.properties
+build/
+.DS_Store
+
+# Third-party artifacts fetched (and SHA-256 checked) by ./fetch-deps.sh; never committed.
+/app/libs/
+/app/src/main/assets/oww/
+/app/src/main/assets/kws/
+/cascade/libs/
+*.part
+
+# Local-only test audio (see README "Validating locally").
+/fixtures/

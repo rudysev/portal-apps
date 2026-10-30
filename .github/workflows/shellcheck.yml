@@ -1,7 +1,7 @@
 name: shellcheck
 
-# The superproject has no Gradle build: its only code is the end-user installer in provisioning/ (plus the
-# git hook). The submodules run their own CI.
+# The superproject's shell scripts are the end-user installer in provisioning/, the git hook and the
+# prototypes/ scripts; prototypes/jarvis-cascade's Gradle build has its own workflow. The submodules run their own CI.
 on:
   push:
     branches: [main]

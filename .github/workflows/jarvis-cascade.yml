@@ -1,0 +1,37 @@
+name: jarvis-cascade
+
+# The prototypes/jarvis-cascade test app's own Gradle build: unit tests (including the real models), Android Lint,
+# detekt and ktlint, then the debug APK. Runs only when the prototype changes.
+on:
+  pull_request:
+    branches: [main]
+    paths: ['prototypes/jarvis-cascade/**', '.github/workflows/jarvis-cascade.yml']
+  push:
+    branches: [main]
+    paths: ['prototypes/jarvis-cascade/**', '.github/workflows/jarvis-cascade.yml']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototypes/jarvis-cascade
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v6
+      # The models and sherpa-onnx binaries are pinned by SHA-256 in fetch-deps.sh, so its hash keys the cache.
+      - uses: actions/cache@v6
+        with:
+          path: |
+            prototypes/jarvis-cascade/app/libs
+            prototypes/jarvis-cascade/app/src/main/assets/oww
+            prototypes/jarvis-cascade/app/src/main/assets/kws
+            prototypes/jarvis-cascade/cascade/libs
+          key: jarvis-cascade-deps-${{ runner.os }}-${{ hashFiles('prototypes/jarvis-cascade/fetch-deps.sh') }}
+      - run: ./fetch-deps.sh
+      - run: ./gradlew check assembleDebug

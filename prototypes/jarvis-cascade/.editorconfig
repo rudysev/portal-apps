@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.kt]
+ktlint_code_style = intellij_idea
+indent_style = space
+indent_size = 4
+max_line_length = 120
+# @Composable functions are PascalCase by convention — exempt them from the function-naming rule.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+[*.kts]
+ktlint_code_style = intellij_idea
+indent_style = space
+indent_size = 2
+max_line_length = 120
