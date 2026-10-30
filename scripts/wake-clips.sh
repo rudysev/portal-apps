@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Pull, list, play and label the wake clips portal-wake records on a debug build (WakeClipRecorder): the 5 s of
-# audio behind every wake and near-miss. A false wake's decode can't be told from a real one; its audio can.
+# audio behind every wake and near-miss, and the last 60 s when a missed wake is marked. A false wake's decode can't
+# be told from a real one; its audio can.
 #
+#   scripts/wake-clips.sh mark                    the wake phrase was just said and didn't fire: save the last minute
+#                                                 on the Portal as a miss_ clip, then pull
 #   scripts/wake-clips.sh pull                    move new clips off the Portal into the inbox, each with its decode
 #   scripts/wake-clips.sh list [N]                the newest N inbox clips (default 10): time, clip, decode
 #   scripts/wake-clips.sh play <clip|latest>      play one on this Mac
@@ -11,7 +14,7 @@
 # <clip> is a file name from `list` (with or without .wav); `latest` is the newest wake_ clip in the inbox.
 #
 # The corpus is household audio, so it lives in .corpus/wake/ (gitignored: these repos are public):
-#   inbox/          pulled, not yet labelled          true/   real wakes, and near-misses that were real wakes
+#   inbox/          pulled, not yet labelled          true/   the phrase was said: wakes, near-misses, misses
 #   false/          false wakes and near-misses that weren't the phrase
 # Each clip has a .txt sidecar holding its debug.txt line (the decode), for regression replay.
 #
@@ -22,6 +25,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CORPUS="${WAKE_CORPUS:-$ROOT/.corpus/wake}"
 DEVICE_FILES="/sdcard/Android/data/com.portal.wake/files"
 DEVICE_CLIPS="$DEVICE_FILES/wake-clips"
+MARK_MISS_ACTION="com.portal.wake.action.MARK_MISS" # WakeService.ACTION_MARK_MISS
+# The mark is taken at the Portal's next 100 ms frame and the clip written off the capture thread; wait this long.
+MARK_WRITE_S=2
 if [[ -z "${ADB:-}" ]]; then
   if command -v adb >/dev/null; then ADB="adb"; else ADB="npx -y @meta-quest/hzdb adb"; fi
 fi
@@ -56,6 +62,7 @@ decode_line() {
   case "$clip" in
     wake_*) pattern="wake detected" ;;
     near_*) pattern="near-miss" ;;
+    miss_*) pattern="miss mark" ;;
     *) return 0 ;;
   esac
   awk -v ms="$ms" -v slack="$JOIN_SLACK_MS" -v pat="$pattern" \
@@ -67,7 +74,7 @@ cmd_pull() {
   mkdir -p "$CORPUS/inbox"
   local tmp
   tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' RETURN
+  trap 'rm -rf "$tmp"; trap - RETURN' RETURN
   local names
   names="$(adb_ shell "ls $DEVICE_CLIPS 2>/dev/null" | tr -d '\r' | grep '\.wav$' || true)"
   if [[ -z "$names" ]]; then
@@ -92,6 +99,12 @@ cmd_pull() {
     adb_ shell "cd $DEVICE_CLIPS && rm -f ${pulled[*]:i:50}"
   done
   echo "pulled $n clip(s) into $CORPUS/inbox"
+}
+
+cmd_mark() {
+  adb_ shell am broadcast -a "$MARK_MISS_ACTION" -p com.portal.wake >/dev/null
+  sleep "$MARK_WRITE_S"
+  cmd_pull
 }
 
 cmd_list() {
@@ -141,9 +154,10 @@ cmd_label() {
 }
 
 case "${1:-}" in
+  mark) cmd_mark ;;
   pull) cmd_pull ;;
   list) cmd_list "${@:2}" ;;
   play) cmd_play "${@:2}" ;;
   label) cmd_label "${@:2}" ;;
-  *) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//' && exit 2 ;;
+  *) sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//' && exit 2 ;;
 esac
