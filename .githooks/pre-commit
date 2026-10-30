@@ -1,5 +1,6 @@
 #!/bin/sh
-# pre-commit: shellcheck on the staged shell scripts (the end-user installer in provisioning/ and this hook).
+# pre-commit: shellcheck on the staged shell scripts (the end-user installer in provisioning/, the prototypes/
+# scripts and this hook).
 # Rejects the commit on findings; never auto-fixes. Enable with `git config core.hooksPath .githooks`.
 # Skip deliberately with `git commit --no-verify`. The submodules have their own hooks (ktlint, detekt, shellcheck).
 set -eu

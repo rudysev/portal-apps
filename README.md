@@ -46,7 +46,7 @@ Verify a change with `./gradlew check` inside the submodule. The hooks need the 
 and put its `bin/` on your `PATH`; Homebrew only has detekt 1.x): in each
 submodule `pre-commit` lints the staged Kotlin files (ktlint, detekt) and shell scripts
 and `pre-push` runs `./gradlew check`. Here in portal-apps, `pre-commit` runs shellcheck on the staged scripts
-(the `provisioning/` installer). Each repo's CI runs shellcheck on all its scripts
+(the `provisioning/` installer and the `prototypes/` scripts). Each repo's CI runs shellcheck on all its scripts
 (`.github/workflows/shellcheck.yml` here); all four repos carry an identical `.shellcheckrc`.
 
 Each submodule builds independently (see its own `CLAUDE.md` / `README.md`); `portal-commons` is wired
