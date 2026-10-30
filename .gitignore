@@ -13,3 +13,6 @@ provisioning/platform-tools.zip
 
 # Local issue tracker (specs + tickets) — kept on this machine only.
 .scratch/
+
+# Wake-clip corpus (scripts/wake-clips.sh): household audio, never commit — these repos are public.
+.corpus/
