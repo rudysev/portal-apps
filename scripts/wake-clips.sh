@@ -25,7 +25,8 @@ DEVICE_CLIPS="$DEVICE_FILES/wake-clips"
 if [[ -z "${ADB:-}" ]]; then
   if command -v adb >/dev/null; then ADB="adb"; else ADB="npx -y @meta-quest/hzdb adb"; fi
 fi
-# A clip's wall-clock stamp is taken a few ms after its debug.txt line; allow this much slack when joining them.
+# A clip's wall-clock stamp is a few ms from its debug.txt line, before or after it (a wake's clip is saved before
+# its line is logged, a near-miss's after); allow this much slack either way when joining them.
 JOIN_SLACK_MS=2000
 
 die() {
@@ -48,7 +49,7 @@ local_time() {
   date -r "$(($1 / 1000))" "+%a %H:%M:%S"
 }
 
-# The debug.txt line for a clip: the last matching decision logged at or up to JOIN_SLACK_MS before it.
+# The debug.txt line for a clip: the matching decision logged closest to it, within JOIN_SLACK_MS either way.
 decode_line() {
   local clip="$1" log="$2" ms pattern
   ms="$(clip_ms "$clip")"
@@ -58,7 +59,8 @@ decode_line() {
     *) return 0 ;;
   esac
   awk -v ms="$ms" -v slack="$JOIN_SLACK_MS" -v pat="$pattern" \
-    'index($0, pat) && $1 <= ms + 0 && $1 >= ms - slack { line = $0 } END { if (line) print line }' "$log"
+    'index($0, pat) { d = $1 - ms; if (d < 0) d = -d; if (d <= slack + 0 && (!line || d < best)) { best = d; line = $0 } }
+     END { if (line) print line }' "$log"
 }
 
 cmd_pull() {
