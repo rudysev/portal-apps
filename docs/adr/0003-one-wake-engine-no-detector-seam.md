@@ -1,6 +1,6 @@
 # 0003: Commons runs one wake engine, Vosk, with no public detector seam
 
-**Status:** accepted (2026-10-28)
+**Status:** accepted (2026-10-28); revisited by [0004](0004-hybrid-wake-detector-beside-vosk.md), now that a second wake engine has arrived
 
 ## Context
 
